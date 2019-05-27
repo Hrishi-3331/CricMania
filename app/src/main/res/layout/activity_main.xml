@@ -147,6 +147,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
+                android:onClick="PlayNow"
                 />
 
         </LinearLayout>

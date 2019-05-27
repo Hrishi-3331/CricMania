@@ -17,7 +17,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".Authentication"></activity>
+        <activity android:name=".Authentication" />
+        <activity android:name=".AvailableGames" />
+        <activity android:name=".StartGame"></activity>
     </application>
 
 </manifest>
