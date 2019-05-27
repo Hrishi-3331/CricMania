@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1018898384582",
+    "firebase_url": "https://cricmania-d6acc.firebaseio.com",
+    "project_id": "cricmania-d6acc",
+    "storage_bucket": "cricmania-d6acc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018898384582:android:f7e000deb377cee6",
+        "android_client_info": {
+          "package_name": "com.hrishi_3331.devstudio3331.cricmania"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018898384582-tlk03tqcutkh4ndrqb0ecjomq3634uk6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hrishi_3331.devstudio3331.cricmania",
+            "certificate_hash": "20c2b8b746e32d5de32080f9c55f6d1adc3f7fff"
+          }
+        },
+        {
+          "client_id": "1018898384582-lq2t2nqm165p2c9inei0enk8b7t1qttm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvF7AHQKvmewvOdBbTpMCe9Mah7khU274"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018898384582-lq2t2nqm165p2c9inei0enk8b7t1qttm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
