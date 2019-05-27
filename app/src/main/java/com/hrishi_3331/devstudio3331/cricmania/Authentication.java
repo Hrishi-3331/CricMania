@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class Authentication extends AppCompatActivity {
 
@@ -22,6 +24,7 @@ public class Authentication extends AppCompatActivity {
     private EditText user_password;
     private CoordinatorLayout cord;
     private ProgressDialog jDialog;
+    private FirebaseUser mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class Authentication extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     jDialog.dismiss();
                     if (task.isSuccessful()){
+                        mUser = jAuth.getCurrentUser();
                         Intent intent = new Intent(Authentication.this, MainActivity.class);
                         startActivity(intent);
                         finish();
