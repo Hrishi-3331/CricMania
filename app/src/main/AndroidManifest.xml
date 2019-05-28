@@ -4,8 +4,10 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -21,7 +23,8 @@
         <activity android:name=".AvailableGames" />
         <activity android:name=".StartGame" />
         <activity android:name=".JoinTable" />
-        <activity android:name=".HostTable"></activity>
+        <activity android:name=".HostTable" />
+        <activity android:name=".FindingOpponent"></activity>
     </application>
 
 </manifest>

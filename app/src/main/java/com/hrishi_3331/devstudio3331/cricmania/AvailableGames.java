@@ -1,7 +1,9 @@
 package com.hrishi_3331.devstudio3331.cricmania;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ public class AvailableGames extends AppCompatActivity {
 
     private DatabaseReference jRef;
     private RecyclerView matches;
+    private LinearLayoutManager manager;
+    private ProgressDialog jDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +30,13 @@ public class AvailableGames extends AppCompatActivity {
 
         matches = (RecyclerView)findViewById(R.id.matches);
 
-        LinearLayoutManager manager = new LinearLayoutManager(AvailableGames.this, LinearLayoutManager.VERTICAL, false);
+        jDialog = new ProgressDialog(AvailableGames.this);
+        jDialog.setTitle("Loading available matches");
+        jDialog.setMessage("Please wait...");
+        jDialog.setCanceledOnTouchOutside(false);
+        jDialog.setCancelable(false);
+
+        manager = new LinearLayoutManager(AvailableGames.this, LinearLayoutManager.VERTICAL, false);
         matches.setLayoutManager(manager);
 
         jRef = FirebaseDatabase.getInstance().getReference().child("Matches");
@@ -36,6 +46,7 @@ public class AvailableGames extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        jDialog.show();
 
         FirebaseRecyclerAdapter<Match, MatchViewHolder> adapter = new FirebaseRecyclerAdapter<Match, MatchViewHolder>(Match.class, R.layout.match_board, MatchViewHolder.class, jRef) {
             @Override
@@ -47,6 +58,7 @@ public class AvailableGames extends AppCompatActivity {
             }
         };
         matches.setAdapter(adapter);
+        userdialog();
     }
 
 
@@ -89,5 +101,24 @@ public class AvailableGames extends AppCompatActivity {
         }
 
 
+    }
+
+    public void userdialog() {
+        if (manager.getChildCount() > 0) {
+            jDialog.dismiss();
+        } else {
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (manager.getChildCount() > 0) {
+                        jDialog.dismiss();
+                    } else {
+                        userdialog();
+                    }
+                }
+            };
+            handler.postDelayed(runnable, 1500);
+        }
     }
 }
