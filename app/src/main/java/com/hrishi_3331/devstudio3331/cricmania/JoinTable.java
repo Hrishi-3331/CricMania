@@ -77,6 +77,7 @@ public class JoinTable extends AppCompatActivity {
         private String table_id;
         private AlertDialog dialog;
         private String host_id;
+        private int cr_val, players_val;
 
         public TableViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -87,6 +88,8 @@ public class JoinTable extends AppCompatActivity {
         }
 
         public void setTable(String host, int Players, int cr){
+            cr_val = cr;
+            players_val = Players;
             this.host.setText(host);
             this.players.setText(String.valueOf(Players));
             this.cr.setText(String.valueOf(cr));
@@ -116,6 +119,7 @@ public class JoinTable extends AppCompatActivity {
                             intent.putExtra("match_id", match_id);
                             intent.putExtra("isHost", false);
                             intent.putExtra("other", host_id);
+                            intent.putExtra("settings", cr_val + "x" + players_val);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
                         }

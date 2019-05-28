@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewGame">
+    tools:context=".TossActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,15 +14,14 @@
         >
 
         <TextView
-            android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="New Game"
+            android:padding="15dp"
+            android:text="Lets Toss"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:padding="15dp"
-            />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,23 +34,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/color1"
-                android:gravity="center"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:text="Host"
-                    android:textColor="@android:color/background_light"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:elevation="4dp"
@@ -77,7 +59,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/ng_p1_name"
+                        android:id="@+id/toss_p1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
@@ -86,32 +68,6 @@
                         android:textColor="@android:color/background_light"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:padding="6dp">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:scaleType="fitCenter"
-                            android:src="@drawable/coins" />
-
-                        <TextView
-                            android:id="@+id/ng_p1_coins"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="4dp"
-                            android:text="500"
-                            android:textAlignment="textStart"
-                            android:textColor="@android:color/background_light"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -125,32 +81,50 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color1"
+                android:gravity="center"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Host"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/host_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text=":  online"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_weight="1"
                 >
 
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_margin="16sp"
-                    app:srcCompat="@drawable/wc" />
-
-                <Button
-                    android:id="@+id/start"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/wait_bar"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button"
-                    android:onClick="StartGame"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="8dp"
-                    android:text="Start Game"
+                    android:padding="8dp"
+                    android:text="Waiting for players to come online."
+                    android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="16sp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -158,6 +132,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/color1"
                 android:gravity="center"
+                android:orientation="horizontal"
                 >
 
                 <TextView
@@ -167,6 +142,16 @@
                     android:text="Guest"
                     android:textColor="@android:color/background_light"
                     android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/guest_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text=":  online"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -206,7 +191,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/ng_p2_name"
+                            android:id="@+id/toss_p2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
@@ -216,33 +201,14 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal"
-                            android:padding="6dp">
-
-                            <ImageView
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:scaleType="fitCenter"
-                                android:src="@drawable/coins" />
-
-                            <TextView
-                                android:id="@+id/ng_p2_coins"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:padding="4dp"
-                                android:text="500"
-                                android:textAlignment="textStart"
-                                android:textColor="@android:color/background_light"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
                     </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/guest_choice"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="8dp"
+                        android:src="@drawable/choice" />
 
                 </LinearLayout>
 

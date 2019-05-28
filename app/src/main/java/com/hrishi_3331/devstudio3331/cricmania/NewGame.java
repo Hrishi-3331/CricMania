@@ -1,10 +1,13 @@
 package com.hrishi_3331.devstudio3331.cricmania;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,7 @@ public class NewGame extends AppCompatActivity {
     private boolean isHost;
     private TextView p1, p1_coins, p2, p2_coins;
     private String other_player;
+    private String settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +43,7 @@ public class NewGame extends AppCompatActivity {
         table_id = intent.getStringExtra("table_id");
         other_player = intent.getStringExtra("other");
         isHost = intent.getBooleanExtra("isHost", true);
-
-        Toast.makeText(this, other_player, Toast.LENGTH_SHORT).show();
+        settings = intent.getStringExtra("settings");
 
         p1 = (TextView)findViewById(R.id.ng_p1_name);
         p2 = (TextView)findViewById(R.id.ng_p2_name);
@@ -140,5 +143,64 @@ public class NewGame extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder  = new AlertDialog.Builder(NewGame.this);
+        builder.setTitle("Quit Game?");
+        builder.setMessage("Are you sure? you will be charged 20 coins for quitting game in between!");
+        builder.setCancelable(false);
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(NewGame.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private String createGame(String uid, String other_player, boolean isHost) {
+        String GameId;
+
+        if (isHost){
+            GameId = uid + other_player;
+        }
+        else {
+            GameId = other_player + uid;
+        }
+
+        DatabaseReference hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(GameId);
+        hRef.child("settings").setValue(settings);
+        if (isHost){
+            hRef.child("player1").child("id").setValue(uid);
+            hRef.child("player2").child("id").setValue(other_player);
+        }
+        else {
+            hRef.child("player2").child("id").setValue(uid);
+            hRef.child("player1").child("id").setValue(other_player);
+        }
+        hRef.child("player1").child("status").setValue(3);
+        hRef.child("player2").child("status").setValue(3);
+        return GameId;
+    }
+
+    public void StartGame(View view){
+        String Game = createGame(jUser.getUid(), other_player, isHost);
+        Intent intent = new Intent(NewGame.this, TossActivity.class);
+        intent.putExtra("game", Game);
+        intent.putExtra("isHost", isHost);
+        startActivity(intent);
+        finish();
     }
 }
