@@ -41,7 +41,7 @@ public class AvailableGames extends AppCompatActivity {
             @Override
             protected void populateViewHolder(MatchViewHolder viewHolder, Match model, int position) {
                 viewHolder.setTeams(model.getTeam1(), model.getTeam2(), model.getTitle());
-                viewHolder.setId(model.getId());
+                viewHolder.setId(model.getMatch_id());
                 viewHolder.setListner(AvailableGames.this);
 
             }
@@ -74,7 +74,7 @@ public class AvailableGames extends AppCompatActivity {
         }
 
         public void setId(String Id){
-            this.id = id;
+            this.id = Id;
         }
 
         public void setListner(final Context context){

@@ -19,7 +19,9 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".Authentication" />
         <activity android:name=".AvailableGames" />
-        <activity android:name=".StartGame"></activity>
+        <activity android:name=".StartGame" />
+        <activity android:name=".JoinTable" />
+        <activity android:name=".HostTable"></activity>
     </application>
 
 </manifest>

@@ -5,17 +5,17 @@ public class Match {
     private String title;
     private String team1;
     private String team2;
-    private String id;
+    private String match_id;
 
     public Match() {
 
     }
 
-    public Match(String title, String team1, String team2, String id) {
+    public Match(String title, String team1, String team2, String match_id) {
         this.title = title;
         this.team1 = team1;
         this.team2 = team2;
-        this.id = id;
+        this.match_id = match_id;
     }
 
     public String getTitle() {
@@ -42,11 +42,11 @@ public class Match {
         this.team2 = team2;
     }
 
-    public String getId() {
-        return id;
+    public String getMatch_id() {
+        return match_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMatch_id(String match_id) {
+        this.match_id = match_id;
     }
 }
