@@ -16,13 +16,16 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 public class JoinTable extends AppCompatActivity {
 
     private RecyclerView Tables;
     private DatabaseReference jRef;
+    private Query jQuery;
     private ProgressDialog jDialog;
     private LinearLayoutManager manager;
+    public static String match_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +39,10 @@ public class JoinTable extends AppCompatActivity {
         jDialog.setCancelable(false);
 
         Intent intent = getIntent();
-        String match_id = intent.getStringExtra("match_id");
+        match_id = intent.getStringExtra("match_id");
 
         jRef = FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Tables");
+        jQuery = jRef.orderByChild("status").equalTo(0);
 
         Tables = (RecyclerView)findViewById(R.id.available_tables);
 
@@ -52,11 +56,12 @@ public class JoinTable extends AppCompatActivity {
         jDialog.show();
         super.onStart();
 
-        FirebaseRecyclerAdapter<Table, TableViewHolder> adapter = new FirebaseRecyclerAdapter<Table, TableViewHolder>(Table.class, R.layout.table_box, TableViewHolder.class, jRef) {
+        FirebaseRecyclerAdapter<Table, TableViewHolder> adapter = new FirebaseRecyclerAdapter<Table, TableViewHolder>(Table.class, R.layout.table_box, TableViewHolder.class, jQuery) {
             @Override
             protected void populateViewHolder(TableViewHolder viewHolder, Table model, int position) {
                 viewHolder.setTable(model.getHost(), model.getPlayers(), model.getCR());
                 viewHolder.getTableId(model.getTable_id());
+                viewHolder.getHostId(model.getHost_id());
                 viewHolder.setListners(JoinTable.this);
             }
         };
@@ -71,6 +76,7 @@ public class JoinTable extends AppCompatActivity {
         private TextView host, players, cr;
         private String table_id;
         private AlertDialog dialog;
+        private String host_id;
 
         public TableViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -90,6 +96,10 @@ public class JoinTable extends AppCompatActivity {
             this.table_id = table_id;
         }
 
+        public void getHostId(String host_id){
+            this.host_id = host_id;
+        }
+
         public void setListners(final Context context){
             jView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -101,8 +111,11 @@ public class JoinTable extends AppCompatActivity {
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(context, FindingOpponent.class);
+                            Intent intent = new Intent(context, NewGame.class);
                             intent.putExtra("table_id", table_id);
+                            intent.putExtra("match_id", match_id);
+                            intent.putExtra("isHost", false);
+                            intent.putExtra("other", host_id);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
                         }

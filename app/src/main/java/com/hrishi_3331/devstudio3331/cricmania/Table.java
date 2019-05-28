@@ -4,6 +4,7 @@ public class Table {
 
     private String table_id;
     private String host;
+    private String host_id;
     private int CR;
     private int Players;
 
@@ -11,11 +12,12 @@ public class Table {
 
     }
 
-    public Table(String table_id, int CR, int players, String host) {
+    public Table(String table_id, int CR, int players, String host, String host_id) {
         this.table_id = table_id;
         this.CR = CR;
         Players = players;
         this.host = host;
+        this.host_id = host_id;
     }
 
     public String getTable_id() {
@@ -48,5 +50,13 @@ public class Table {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getHost_id() {
+        return host_id;
+    }
+
+    public void setHost_id(String host_id) {
+        this.host_id = host_id;
     }
 }
