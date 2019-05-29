@@ -180,8 +180,20 @@ public class NewGame extends AppCompatActivity {
             GameId = other_player + uid;
         }
 
-        DatabaseReference hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(GameId);
+        final DatabaseReference hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(GameId);
         hRef.child("settings").setValue(settings);
+        hRef.child("match").setValue(match_id);
+        FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Players").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                hRef.child("players").setValue(dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         if (isHost){
             hRef.child("player1").child("id").setValue(uid);
             hRef.child("player2").child("id").setValue(other_player);
@@ -197,7 +209,7 @@ public class NewGame extends AppCompatActivity {
 
     public void StartGame(View view){
         String Game = createGame(jUser.getUid(), other_player, isHost);
-        Intent intent = new Intent(NewGame.this, TossActivity.class);
+        Intent intent = new Intent(NewGame.this, ChoosePlayers.class);
         intent.putExtra("game", Game);
         intent.putExtra("isHost", isHost);
         startActivity(intent);

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:elevation="4dp"
+    >
+
+    <LinearLayout
+        android:id="@+id/player_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="3dp"
+        android:gravity="center">
+
+    <LinearLayout
+        android:background="@color/colorPrimary"
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="110dp"
+        android:scaleType="fitXY"
+        android:id="@+id/player_image"
+        />
+
+        <TextView
+            android:textAlignment="center"
+            android:id="@+id/player_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:text="Player Name"
+            android:textColor="@android:color/background_light"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

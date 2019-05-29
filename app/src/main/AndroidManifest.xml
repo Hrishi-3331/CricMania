@@ -25,7 +25,8 @@
         <activity android:name=".JoinTable" />
         <activity android:name=".HostTable" />
         <activity android:name=".NewGame" />
-        <activity android:name=".TossActivity"></activity>
+        <activity android:name=".TossActivity" />
+        <activity android:name=".ChoosePlayers"></activity>
     </application>
 
 </manifest>
