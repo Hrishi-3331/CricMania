@@ -37,23 +37,6 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/color1"
-                android:gravity="center"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:text="Host"
-                    android:textColor="@android:color/background_light"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:elevation="4dp"
                 android:background="@color/colorAccent"
                 android:layout_width="match_parent"
@@ -122,6 +105,23 @@
                 android:layout_height="1dp"
                 android:background="@android:color/white"
                 />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color1"
+                android:gravity="center"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Host"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

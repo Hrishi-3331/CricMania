@@ -125,6 +125,29 @@
                     android:textColor="@android:color/background_light"
                     android:textSize="16sp" />
 
+                <FrameLayout
+                    android:id="@+id/toss_frame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="125dp"
+                        android:layout_height="125dp"
+                        android:src="@drawable/heads"
+                        android:id="@+id/frame_heads"
+                        />
+
+                    <ImageView
+                        android:layout_width="125dp"
+                        android:layout_height="125dp"
+                        android:src="@drawable/tails"
+                        android:id="@+id/frame_tails"
+                        />
+
+                </FrameLayout>
+
             </LinearLayout>
 
             <LinearLayout
