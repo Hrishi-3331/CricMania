@@ -1,5 +1,6 @@
 package com.hrishi_3331.devstudio3331.cricmania;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +40,9 @@ public class ChoosePlayers extends AppCompatActivity {
     private static int OTHER_TURN;
     public static boolean yourChance;
     private static String val;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private ProgressDialog jDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,15 @@ public class ChoosePlayers extends AppCompatActivity {
         isHost = intent.getBooleanExtra("isHost", false);
 
         hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(game);
+
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+
+        jDialog = new ProgressDialog(ChoosePlayers.this);
+        jDialog.setTitle("Submitting Game");
+        jDialog.setMessage("Please wait..");
+        jDialog.setCancelable(false);
+        jDialog.setCanceledOnTouchOutside(false);
 
         noticeboard.setText("waiting for player to come online");
 
@@ -175,6 +190,17 @@ public class ChoosePlayers extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     val = dataSnapshot.getValue().toString();
                     you_count.setText(val + "/" + limit);
+
+                    if (Integer.valueOf(val) == limit){
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                SubmitGame();
+                            }
+                        };
+                        handler.postDelayed(runnable, 1500);
+                    }
                 }
 
                 @Override
@@ -191,6 +217,25 @@ public class ChoosePlayers extends AppCompatActivity {
     }
 
     private void SubmitGame() {
+        jDialog.show();
+        DatabaseReference aRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mUser.getUid());
+        aRef.child("History").push().child("game_id").setValue(game);
+        aRef.child("available").setValue(1);
+        aRef.child("last_active_game").setValue(game);
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(ChoosePlayers.this, GameStats.class);
+                intent.putExtra("game", game);
+                startActivity(intent);
+                jDialog.dismiss();
+                finish();
+            }
+        };
+
+        handler.postDelayed(runnable, 2000);
+
 
     }
 

@@ -26,7 +26,8 @@
         <activity android:name=".HostTable" />
         <activity android:name=".NewGame" />
         <activity android:name=".TossActivity" />
-        <activity android:name=".ChoosePlayers"></activity>
+        <activity android:name=".ChoosePlayers" />
+        <activity android:name=".GameStats"></activity>
     </application>
 
 </manifest>
