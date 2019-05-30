@@ -28,7 +28,9 @@
         <activity android:name=".TossActivity" />
         <activity android:name=".ChoosePlayers" />
         <activity android:name=".GameStats" />
-        <activity android:name=".HostWait"></activity>
+        <activity android:name=".HostWait" />
+        <activity android:name=".History" />
+        <activity android:name=".Contact"></activity>
     </application>
 
 </manifest>

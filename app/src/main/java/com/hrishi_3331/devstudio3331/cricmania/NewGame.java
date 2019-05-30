@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +30,7 @@ public class NewGame extends AppCompatActivity {
     private TextView p1, p1_coins, p2, p2_coins;
     private String other_player;
     private String settings;
+    private boolean complete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +41,14 @@ public class NewGame extends AppCompatActivity {
         match_id = intent.getStringExtra("match_id");
         table_id = intent.getStringExtra("table_id");
         other_player = intent.getStringExtra("other");
-        isHost = intent.getBooleanExtra("isHost", true);
+        isHost = intent.getBooleanExtra("isHost", false);
         settings = intent.getStringExtra("settings");
 
         p1 = (TextView)findViewById(R.id.ng_p1_name);
         p2 = (TextView)findViewById(R.id.ng_p2_name);
         p1_coins = (TextView)findViewById(R.id.ng_p1_coins);
         p2_coins = (TextView)findViewById(R.id.ng_p2_coins);
+        complete = false;
 
         jAuth = FirebaseAuth.getInstance();
         jUser = jAuth.getCurrentUser();
@@ -63,7 +63,7 @@ public class NewGame extends AppCompatActivity {
         jDialog.setCancelable(false);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid());
-        ref.child("usercoins").addValueEventListener(new ValueEventListener() {
+        ref.child("usercoins").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String coins = dataSnapshot.getValue().toString();
@@ -81,7 +81,7 @@ public class NewGame extends AppCompatActivity {
             }
         });
 
-        ref.child("username").addValueEventListener(new ValueEventListener() {
+        ref.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue().toString();
@@ -149,7 +149,7 @@ public class NewGame extends AppCompatActivity {
     public void onBackPressed() {
         AlertDialog.Builder builder  = new AlertDialog.Builder(NewGame.this);
         builder.setTitle("Quit Game?");
-        builder.setMessage("Are you sure? you will be charged 20 coins for quitting game in between!");
+        builder.setMessage("Are you sure? you will be charged 50 coins for quitting game in between!");
         builder.setCancelable(false);
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
@@ -161,6 +161,7 @@ public class NewGame extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                chargePlayer();
                 Intent intent = new Intent(NewGame.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -168,6 +169,23 @@ public class NewGame extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void chargePlayer(){
+        if(isHost){
+            FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid()).child("usercoins").setValue(Integer.valueOf(p1_coins.getText().toString()) - 50);
+        }
+        else {
+            FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid()).child("usercoins").setValue(Integer.valueOf(p2_coins.getText().toString()) - 50);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!complete){
+            chargePlayer();
+        }
+        super.onDestroy();
     }
 
     private String createGame(String uid, String other_player, boolean isHost) {
@@ -212,6 +230,7 @@ public class NewGame extends AppCompatActivity {
         Intent intent = new Intent(NewGame.this, ChoosePlayers.class);
         intent.putExtra("game", Game);
         intent.putExtra("isHost", isHost);
+        complete = true;
         startActivity(intent);
         finish();
     }

@@ -449,7 +449,7 @@ public class ChoosePlayers extends AppCompatActivity {
                             if (isHost) {
                                 hRef.child("player1").child("selected_players").setValue(Integer.valueOf(val) + 1);
                                 hRef.child("player1").child("players_selected").push().child("id").setValue(player_id);
-                                hRef.child("Players").child(player_id).child("key").setValue(0);
+                                hRef.child("players").child(player_id).child("key").setValue(0);
 
                             } else {
                                 hRef.child("player2").child("selected_players").setValue(Integer.valueOf(val) + 1);

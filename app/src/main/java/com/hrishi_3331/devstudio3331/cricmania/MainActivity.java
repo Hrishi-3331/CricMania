@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Crick Mania");
+        getSupportActionBar().setTitle("Freedom");
 
         mDrawer = (DrawerLayout) findViewById(R.id.mDrawer);
         mNavigation = (NavigationView) findViewById(R.id.mNavigation);
@@ -86,8 +87,17 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
 
                     case R.id.logout:
+                        jAuth.signOut();
                         startActivity(new Intent(MainActivity.this, Authentication.class));
                         finish();
+                        break;
+
+                    case R.id.history:
+                        startActivity(new Intent(MainActivity.this, History.class));
+                        break;
+
+                    case R.id.contact:
+                        startActivity(new Intent(MainActivity.this, Contact.class));
                         break;
 
                     default:
@@ -97,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        View header = mNavigation.getHeaderView(0);
+        final ImageView user_image = (ImageView) header.findViewById(R.id.user_header_image);
+        TextView name = (TextView) header.findViewById(R.id.user_name);
+        TextView email = (TextView) header.findViewById(R.id.header_email);
+
+        email.setText(jUser.getEmail());
+        name.setText(jUser.getDisplayName());
 
     }
 
