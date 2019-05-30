@@ -17,8 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class HostTable extends AppCompatActivity {
 
@@ -31,6 +34,7 @@ public class HostTable extends AppCompatActivity {
     private FirebaseUser jUser;
     private ProgressDialog jDialog;
     private CoordinatorLayout cord;
+    private String table_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +136,7 @@ public class HostTable extends AppCompatActivity {
 
     public void CreateTable(){
         jDialog.show();
-        DatabaseReference jRef = FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Tables").push();
+        final DatabaseReference jRef = FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Tables").push();
         jRef.child("CR").setValue(Integer.valueOf(Coins.getText().toString()));
         jRef.child("Players").setValue(Integer.valueOf(Players.getText().toString()));
         jRef.child("host").setValue(jUser.getDisplayName());
@@ -141,12 +145,32 @@ public class HostTable extends AppCompatActivity {
         jRef.child("table_id").setValue(jRef.getKey()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+
                 jDialog.dismiss();
                 if (task.isSuccessful()){
-                    Toast.makeText(HostTable.this, "Table hosted successfully", Toast.LENGTH_SHORT).show();
+                   jRef.child("table_id").addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                           if (dataSnapshot.getValue() != null) {
+                               table_id = dataSnapshot.getValue().toString();
+                               Intent intent = new Intent(HostTable.this, HostWait.class);
+                               intent.putExtra("match_id", match_id);
+                               intent.putExtra("table_id", table_id);
+                               intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                               startActivity(intent);
+                               finish();
+                           }
+                       }
+
+                       @Override
+                       public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                       }
+                   });
                 }
                 else {
-                    Toast.makeText(HostTable.this, "Error in hosting table. Please try again later.", Toast.LENGTH_SHORT).show();
+                    Snackbar snackbar = Snackbar.make(cord, "Error in creating table. Please try again later !", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
             }
         });

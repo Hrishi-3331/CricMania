@@ -14,6 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -21,7 +23,9 @@ import com.google.firebase.database.Query;
 public class JoinTable extends AppCompatActivity {
 
     private RecyclerView Tables;
-    private DatabaseReference jRef;
+    private static FirebaseAuth jAuth;
+    private static FirebaseUser jUser;
+    private static DatabaseReference jRef;
     private Query jQuery;
     private ProgressDialog jDialog;
     private LinearLayoutManager manager;
@@ -43,6 +47,9 @@ public class JoinTable extends AppCompatActivity {
 
         jRef = FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Tables");
         jQuery = jRef.orderByChild("status").equalTo(0);
+
+        jAuth = FirebaseAuth.getInstance();
+        jUser = jAuth.getCurrentUser();
 
         Tables = (RecyclerView)findViewById(R.id.available_tables);
 
@@ -114,6 +121,8 @@ public class JoinTable extends AppCompatActivity {
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            jRef.child(table_id).child("guest_id").setValue(jUser.getUid());
+                            jRef.child(table_id).child("status").setValue(1);
                             Intent intent = new Intent(context, NewGame.class);
                             intent.putExtra("table_id", table_id);
                             intent.putExtra("match_id", match_id);
