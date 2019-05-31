@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,7 +41,7 @@ public class ChoosePlayers extends AppCompatActivity {
     private int YOUR_TURN;
     private static int OTHER_TURN;
     public static boolean yourChance;
-    private static String val;
+    private static int val;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private ProgressDialog jDialog;
@@ -57,7 +59,7 @@ public class ChoosePlayers extends AppCompatActivity {
 
         Intent intent = getIntent();
         game = intent.getStringExtra("game");
-        isFirst = intent.getBooleanExtra("isHost", false);
+        isFirst = intent.getBooleanExtra("isFirst", false);
         isHost = intent.getBooleanExtra("isHost", false);
 
         hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(game);
@@ -147,7 +149,14 @@ public class ChoosePlayers extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 settings = dataSnapshot.getValue().toString();
-                limit = Integer.valueOf(settings.substring(settings.length() - 2));
+                try {
+                    limit = Integer.valueOf(settings.substring(settings.length() - 2));
+                }
+                catch (Exception e){
+                    limit = Integer.valueOf(settings.substring(settings.length() - 1));
+                }
+                Toast.makeText(ChoosePlayers.this, "Limit is " + limit, Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -161,18 +170,20 @@ public class ChoosePlayers extends AppCompatActivity {
             hRef.child("player1").child("selected_players").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    val = dataSnapshot.getValue().toString();
-                    you_count.setText(val + "/" + limit);
+                    if (dataSnapshot.getValue() != null) {
+                        val = Integer.valueOf(dataSnapshot.getValue().toString());
+                        you_count.setText(val + "/" + limit);
 
-                    if (Integer.valueOf(val) == limit){
-                        Handler handler = new Handler();
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                SubmitGame();
-                            }
-                        };
-                        handler.postDelayed(runnable, 1500);
+                        if (val == limit && val != 0) {
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    SubmitGame();
+                                }
+                            };
+                            handler.postDelayed(runnable, 1500);
+                        }
                     }
                 }
 
@@ -188,18 +199,20 @@ public class ChoosePlayers extends AppCompatActivity {
             hRef.child("player2").child("selected_players").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    val = dataSnapshot.getValue().toString();
-                    you_count.setText(val + "/" + limit);
+                    if (dataSnapshot.getValue() != null) {
+                        val = Integer.valueOf(dataSnapshot.getValue().toString());
+                        you_count.setText(val + "/" + limit);
 
-                    if (Integer.valueOf(val) == limit){
-                        Handler handler = new Handler();
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                SubmitGame();
-                            }
-                        };
-                        handler.postDelayed(runnable, 1500);
+                        if (val == limit && val != 0) {
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    SubmitGame();
+                                }
+                            };
+                            handler.postDelayed(runnable, 1500);
+                        }
                     }
                 }
 

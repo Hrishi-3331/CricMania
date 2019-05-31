@@ -1,8 +1,10 @@
 package com.hrishi_3331.devstudio3331.cricmania;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.google.firebase.database.DataSnapshot;
@@ -102,5 +104,28 @@ public class HostWait extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(HostWait.this);
+        builder.setTitle("Are you sure?")
+                .setMessage("Do you want to  quit your created table?")
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                jRef.removeValue();
+                Intent intent = new Intent(HostWait.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+
     }
 }

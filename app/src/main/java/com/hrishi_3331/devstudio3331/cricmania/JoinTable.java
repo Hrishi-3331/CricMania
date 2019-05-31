@@ -12,13 +12,19 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class JoinTable extends AppCompatActivity {
 
@@ -85,6 +91,8 @@ public class JoinTable extends AppCompatActivity {
         private AlertDialog dialog;
         private String host_id;
         private int cr_val, players_val;
+        private ImageView host_image;
+        private int MinimumCriteria, player_coins;
 
         public TableViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,6 +100,7 @@ public class JoinTable extends AppCompatActivity {
             host = jView.findViewById(R.id.hostname);
             players = jView.findViewById(R.id.players);
             cr = jView.findViewById(R.id.cr);
+            host_image = jView.findViewById(R.id.host_image);
         }
 
         public void setTable(String host, int Players, int cr){
@@ -108,6 +117,31 @@ public class JoinTable extends AppCompatActivity {
 
         public void getHostId(String host_id){
             this.host_id = host_id;
+            FirebaseDatabase.getInstance().getReference().child("Users").child(host_id).child("useravtar").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Avtar avtar = new Avtar();
+                    host_image.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            FirebaseDatabase.getInstance().getReference().child("Users").child(host_id).child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                   host.setText(dataSnapshot.getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
         }
 
         public void setListners(final Context context){
@@ -117,20 +151,60 @@ public class JoinTable extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setCancelable(true);
                     builder.setTitle("Join this table?");
-                    builder.setMessage("Are you sure? You will be charged 20 coins if you quit table before end of the game!");
+                    builder.setMessage("Are you sure? You will be charged 50 coins if you quit table before end of the game!");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            jRef.child(table_id).child("guest_id").setValue(jUser.getUid());
-                            jRef.child(table_id).child("status").setValue(1);
-                            Intent intent = new Intent(context, NewGame.class);
-                            intent.putExtra("table_id", table_id);
-                            intent.putExtra("match_id", match_id);
-                            intent.putExtra("isHost", false);
-                            intent.putExtra("other", host_id);
-                            intent.putExtra("settings", cr_val + "x" + players_val);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
+                            if (minimumCriteria(cr_val, players_val)) {
+                                jRef.child(table_id).child("guest_id").setValue(jUser.getUid());
+                                jRef.child(table_id).child("status").setValue(1);
+                                Intent intent = new Intent(context, NewGame.class);
+                                intent.putExtra("table_id", table_id);
+                                intent.putExtra("match_id", match_id);
+                                intent.putExtra("isHost", false);
+                                intent.putExtra("other", host_id);
+                                intent.putExtra("settings", cr_val + "x" + players_val);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent);
+                            }
+                            else {
+                                Toast.makeText(context, "You don't have sufficient coins to join this table", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        private boolean minimumCriteria(final int cr_val, final int players_val) {
+
+                            FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid()).child("usercoins").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    player_coins = Integer.valueOf(dataSnapshot.getValue().toString());
+
+                                    switch (players_val){
+                                        case 1:
+                                            MinimumCriteria = cr_val * 200;
+                                            break;
+
+                                        case 2:
+                                            MinimumCriteria = cr_val * 300;
+                                            break;
+
+                                        case 3:
+                                            MinimumCriteria = cr_val * 350;
+                                            break;
+
+                                        default:
+                                            MinimumCriteria = cr_val * 400;
+                                            break;
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            return player_coins >= MinimumCriteria;
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

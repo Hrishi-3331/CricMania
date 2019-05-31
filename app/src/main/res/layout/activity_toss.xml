@@ -44,7 +44,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/ng_p1_image"
+                    android:id="@+id/toss_p1_image"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_margin="8dp"
@@ -137,9 +137,11 @@
                         android:layout_height="125dp"
                         android:src="@drawable/heads"
                         android:id="@+id/frame_heads"
+                        android:scaleType="fitXY"
                         />
 
                     <ImageView
+                        android:scaleType="fitXY"
                         android:layout_width="125dp"
                         android:layout_height="125dp"
                         android:src="@drawable/tails"
@@ -199,7 +201,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/ng_p2_image"
+                        android:id="@+id/toss_p2_image"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_margin="8dp"

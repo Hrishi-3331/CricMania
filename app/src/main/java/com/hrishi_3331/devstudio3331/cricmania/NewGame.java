@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Arrays;
 
 public class NewGame extends AppCompatActivity {
 
@@ -28,6 +31,7 @@ public class NewGame extends AppCompatActivity {
     private ProgressDialog jDialog;
     private boolean isHost;
     private TextView p1, p1_coins, p2, p2_coins;
+    private ImageView p1_avtar, p2_avtar;
     private String other_player;
     private String settings;
     private boolean complete;
@@ -48,6 +52,8 @@ public class NewGame extends AppCompatActivity {
         p2 = (TextView)findViewById(R.id.ng_p2_name);
         p1_coins = (TextView)findViewById(R.id.ng_p1_coins);
         p2_coins = (TextView)findViewById(R.id.ng_p2_coins);
+        p1_avtar = (ImageView)findViewById(R.id.ng_p1_image);
+        p2_avtar = (ImageView)findViewById(R.id.ng_p2_image);
         complete = false;
 
         jAuth = FirebaseAuth.getInstance();
@@ -72,6 +78,25 @@ public class NewGame extends AppCompatActivity {
                 }
                 else {
                     p2_coins.setText(coins);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        ref.child("useravtar").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(isHost){
+                    Avtar avtar = new Avtar();
+                    p1_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
+                }
+                else {
+                    Avtar avtar = new Avtar();
+                    p2_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
                 }
             }
 
@@ -110,6 +135,25 @@ public class NewGame extends AppCompatActivity {
                 }
                 else {
                     p1.setText(player_name);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        ref2.child("useravtar").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(isHost){
+                    Avtar avtar = new Avtar();
+                    p2_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
+                }
+                else {
+                    Avtar avtar = new Avtar();
+                    p1_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
                 }
             }
 
@@ -198,7 +242,13 @@ public class NewGame extends AppCompatActivity {
             GameId = other_player + uid;
         }
 
+        String[] ids = {uid, other_player};
+        Arrays.sort(ids);
+        String first = ids[0];
+
+
         final DatabaseReference hRef = FirebaseDatabase.getInstance().getReference().child("Games").child(GameId);
+        //hRef.child("toss").child("winner").setValue(first);
         hRef.child("settings").setValue(settings);
         hRef.child("match").setValue(match_id);
         FirebaseDatabase.getInstance().getReference().child("Matches").child(match_id).child("Players").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -222,12 +272,14 @@ public class NewGame extends AppCompatActivity {
         }
         hRef.child("player1").child("status").setValue(3);
         hRef.child("player2").child("status").setValue(3);
+        hRef.child("player1").child("status1").setValue(3);
+        hRef.child("player2").child("status1").setValue(3);
         return GameId;
     }
 
     public void StartGame(View view){
         String Game = createGame(jUser.getUid(), other_player, isHost);
-        Intent intent = new Intent(NewGame.this, ChoosePlayers.class);
+        Intent intent = new Intent(NewGame.this, TossActivity.class);
         intent.putExtra("game", Game);
         intent.putExtra("isHost", isHost);
         complete = true;

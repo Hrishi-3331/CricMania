@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView mNavigation;
     private ActionBarDrawerToggle mToggle;
     private TextView Username, Usercoins;
+    private ImageView avtar;
     private FirebaseAuth jAuth;
     private FirebaseUser jUser;
     private DatabaseReference jRef;
@@ -54,12 +55,26 @@ public class MainActivity extends AppCompatActivity {
 
         Username = (TextView)findViewById(R.id.username_dashboard);
         Usercoins = (TextView)findViewById(R.id.user_coins);
+        avtar = (ImageView)findViewById(R.id.user_image);
 
         jRef = FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid().trim());
         jRef.child("username").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Username.setText(dataSnapshot.getValue().toString().trim());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        jRef.child("useravtar").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Avtar avtara = new Avtar();
+                avtar.setImageResource(avtara.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
             }
 
             @Override

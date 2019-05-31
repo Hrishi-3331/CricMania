@@ -2,5 +2,5 @@
     <string name="app_name">CricMania</string>
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="rules">1. Host will toss the coin.\n2. Guest will choose head or tail.\n3. Winner will choose first player.</string>
+    <string name="rules">1.Guest will choose head or tail.\n2. Winner will choose first player.</string>
 </resources>

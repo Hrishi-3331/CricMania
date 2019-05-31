@@ -4,17 +4,21 @@ public class Match {
 
     private String title;
     private String team1;
+    private String team1_icon;
     private String team2;
+    private String team2_icon;
     private String match_id;
 
     public Match() {
 
     }
 
-    public Match(String title, String team1, String team2, String match_id) {
+    public Match(String title, String team1, String team1_icon, String team2, String team2_icon, String match_id) {
         this.title = title;
         this.team1 = team1;
+        this.team1_icon = team1_icon;
         this.team2 = team2;
+        this.team2_icon = team2_icon;
         this.match_id = match_id;
     }
 
@@ -48,5 +52,21 @@ public class Match {
 
     public void setMatch_id(String match_id) {
         this.match_id = match_id;
+    }
+
+    public String getTeam1_icon() {
+        return team1_icon;
+    }
+
+    public void setTeam1_icon(String team1_icon) {
+        this.team1_icon = team1_icon;
+    }
+
+    public String getTeam2_icon() {
+        return team2_icon;
+    }
+
+    public void setTeam2_icon(String team2_icon) {
+        this.team2_icon = team2_icon;
     }
 }

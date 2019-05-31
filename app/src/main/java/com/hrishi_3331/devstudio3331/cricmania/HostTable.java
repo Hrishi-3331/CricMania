@@ -10,9 +10,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 public class HostTable extends AppCompatActivity {
 
     private TextView Players;
-    private TextView Coins;
+    private EditText Coins;
     private ImageButton coinsadd, coinsminus;
     private ImageButton playersadd, playersminus;
     private String match_id;
@@ -35,6 +37,7 @@ public class HostTable extends AppCompatActivity {
     private ProgressDialog jDialog;
     private CoordinatorLayout cord;
     private String table_id;
+    private int coins;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class HostTable extends AppCompatActivity {
         setContentView(R.layout.activity_host_table);
 
         Players = (TextView)findViewById(R.id.players_number);
-        Coins = (TextView)findViewById(R.id.coins_number);
+        Coins = (EditText) findViewById(R.id.coins_number);
         coinsadd = (ImageButton)findViewById(R.id.coin_plus);
         coinsminus = (ImageButton)findViewById(R.id.coin_minus);
         playersadd = (ImageButton)findViewById(R.id.players_plus);
@@ -61,11 +64,23 @@ public class HostTable extends AppCompatActivity {
         jAuth = FirebaseAuth.getInstance();
         jUser = jAuth.getCurrentUser();
 
+        FirebaseDatabase.getInstance().getReference().child("Users").child(jUser.getUid()).child("usercoins").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                coins = Integer.valueOf(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         playersadd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int jag = Integer.valueOf(Players.getText().toString());
-                if (jag < 11){
+                if (jag < 6){
                     Players.setText(String.valueOf(jag + 1));
                 }
             }
@@ -75,7 +90,7 @@ public class HostTable extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int jag = Integer.valueOf(Players.getText().toString());
-                if (jag > 4){
+                if (jag > 1){
                     Players.setText(String.valueOf(jag - 1));
                 }
             }
@@ -85,9 +100,8 @@ public class HostTable extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int jag = Integer.valueOf(Coins.getText().toString());
-                if (jag < 20){
-                    Coins.setText(String.valueOf(jag + 1));
-                }
+                Coins.setText(String.valueOf(jag + 1));
+
             }
         });
 
@@ -95,7 +109,7 @@ public class HostTable extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int jag = Integer.valueOf(Coins.getText().toString());
-                if (jag > 5){
+                if (jag > 10){
                     Coins.setText(String.valueOf(jag - 1));
                 }
             }
@@ -103,35 +117,58 @@ public class HostTable extends AppCompatActivity {
     }
 
     public void host(View view){
-        if (CheckCriteria()){
-            AlertDialog.Builder builder = new AlertDialog.Builder(HostTable.this);
-            builder.setTitle("Create Table?")
-                    .setMessage("Do you want to create this table?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            CreateTable();
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
+        if (Integer.valueOf(Coins.getText().toString()) < 10){
+            Toast.makeText(this, "Minimum 10 coins per run needed", Toast.LENGTH_SHORT).show();
         }
         else {
-            Snackbar snackbar = Snackbar.make(cord, "You don't have sufficient coins!", Snackbar.LENGTH_LONG);
-            snackbar.show();
+            if (CheckCriteria(Integer.valueOf(Players.getText().toString()), Integer.valueOf(Coins.getText().toString()))) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(HostTable.this);
+                builder.setTitle("Create Table?")
+                        .setMessage("Do you want to create this table?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                CreateTable();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                Snackbar snackbar = Snackbar.make(cord, "You don't have sufficient coins!", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
         }
 
     }
 
-    public boolean CheckCriteria(){
-        return true;
+    public boolean CheckCriteria(int players, int cr){
+        int MinimumCriteria;
+        switch (players) {
+            case 1:
+                MinimumCriteria = cr * 200;
+                break;
+
+            case 2:
+                MinimumCriteria = cr * 300;
+                break;
+
+            case 3:
+                MinimumCriteria = cr * 350;
+                break;
+
+            default:
+                MinimumCriteria = cr * 400;
+                break;
+        }
+
+            return coins >= MinimumCriteria;
     }
 
     public void CreateTable(){

@@ -37,8 +37,9 @@ public class TossActivity extends AppCompatActivity {
     private TextView wait_bar;
     private boolean ready;
     private FrameLayout toss_frame;
-    private ImageView toss_head, toss_tail;
-    private String toss_choice_st;
+    private ImageView toss_head, toss_tail, p1_avtar, p2_avtar;
+    private int toss_choice_st;
+    private boolean isFirst;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,20 +64,24 @@ public class TossActivity extends AppCompatActivity {
         toss_frame = (FrameLayout)findViewById(R.id.toss_frame);
         toss_head = (ImageView)findViewById(R.id.frame_heads);
         toss_tail = (ImageView)findViewById(R.id.frame_tails);
+        p1_avtar = (ImageView)findViewById(R.id.toss_p1_image);
+        p2_avtar = (ImageView)findViewById(R.id.toss_p2_image);
+
         ready = false;
+        isFirst = false;
 
         toss_frame.setVisibility(View.GONE);
-
-        jRef.child("toss").child("status").setValue("pending");
-        jRef.child("toss").child("res").setValue("pending");
-        jRef.child("toss").child("winner").setValue("pending");
+        jRef.child("toss").child("status").setValue(3);
+        jRef.child("toss").child("res").setValue(3);
+        jRef.child("toss").child("winner").setValue(3);
 
         if (isHost){
-            DatabaseReference hRef = jRef.child("player1").child("status");
+            final DatabaseReference hRef = jRef.child("player1").child("status1");
             hRef.setValue(STATUS_ONLINE);
             hRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    hRef.setValue(0);
                     host_state = Integer.valueOf(dataSnapshot.getValue().toString());
                     switch (host_state){
                         case 0:
@@ -97,7 +102,7 @@ public class TossActivity extends AppCompatActivity {
 
                 }
             });
-            jRef.child("player2").child("status").addValueEventListener(new ValueEventListener() {
+            jRef.child("player2").child("status1").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     guest_state = Integer.valueOf(dataSnapshot.getValue().toString());
@@ -125,13 +130,14 @@ public class TossActivity extends AppCompatActivity {
         }
 
         else {
-            DatabaseReference hRef = jRef.child("player2").child("status");
+            final DatabaseReference hRef = jRef.child("player2").child("status1");
             hRef.setValue(STATUS_ONLINE);
 
             hRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     guest_state = Integer.valueOf(dataSnapshot.getValue().toString());
+                    hRef.setValue(0);
                     switch (guest_state){
                         case 0:
                             guest_status.setText(":  online");
@@ -152,7 +158,7 @@ public class TossActivity extends AppCompatActivity {
                 }
             });
 
-            jRef.child("player1").child("status").addValueEventListener(new ValueEventListener() {
+            jRef.child("player1").child("status1").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     host_state = Integer.valueOf(dataSnapshot.getValue().toString());
@@ -195,6 +201,20 @@ public class TossActivity extends AppCompatActivity {
 
                         }
                     });
+
+                    DatabaseReference mRef2 = FirebaseDatabase.getInstance().getReference().child("Users").child(player_1).child("useravtar");
+                    mRef2.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Avtar avtar = new Avtar();
+                            p1_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -224,6 +244,20 @@ public class TossActivity extends AppCompatActivity {
 
                         }
                     });
+
+                    DatabaseReference mRef2 = FirebaseDatabase.getInstance().getReference().child("Users").child(player_2).child("useravtar");
+                    mRef2.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Avtar avtar = new Avtar();
+                            p2_avtar.setImageResource(avtar.getMyAvtar(Integer.valueOf(dataSnapshot.getValue().toString())));
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -236,43 +270,69 @@ public class TossActivity extends AppCompatActivity {
             }
         });
 
-        checkAvailability();
+
 
     }
 
-    public void checkAvailability(){
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkAvailability();
+    }
 
-        if (isHost){
-            if (guest_status.getText().toString() == ":  online"){
-                startGamePlay();
-            }
-            else {
-                Handler handler = new Handler();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        checkAvailability();
+    public void checkAvailability(){
+        if (isHost) {
+            jRef.child("player2").child("status1").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    int data = Integer.valueOf(dataSnapshot.getValue().toString());
+                    if (data == 0){
+                        startGamePlay();
                     }
-                };
-                handler.postDelayed(runnable, 2000);
-            }
+                    else {
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                checkAvailability();
+                            }
+                        };
+                        handler.postDelayed(runnable, 2000);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         else {
-            if (host_status.getText().toString() == ":  online"){
-                startGamePlay();
-            }
-            else {
-                Handler handler = new Handler();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        checkAvailability();
+            jRef.child("player1").child("status1").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    int data = Integer.valueOf(dataSnapshot.getValue().toString());
+                    if (data == 0){
+                        startGamePlay();
                     }
-                };
-                handler.postDelayed(runnable, 2000);
+                    else {
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                checkAvailability();
+                            }
+                        };
+                        handler.postDelayed(runnable, 2000);
+                    }
+                }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
     }
@@ -282,14 +342,14 @@ public class TossActivity extends AppCompatActivity {
         jRef.child("toss").child("status").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String status = dataSnapshot.getValue().toString().trim();
-                if (status != "pending"){
-                    if (status == "heads"){
-                        toss_choice_st = "heads";
+                int status = Integer.valueOf(dataSnapshot.getValue().toString());
+                if (status != 3){
+                    if (status == 0){
+                        toss_choice_st = 0;
                         toss_choice.setImageResource(R.drawable.heads);
                     }
                     else {
-                        toss_choice_st = "tails";
+                        toss_choice_st = 1;
                         toss_choice.setImageResource(R.drawable.tails);
                     }
                     startToss();
@@ -305,15 +365,30 @@ public class TossActivity extends AppCompatActivity {
         jRef.child("toss").child("res").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String res = dataSnapshot.getValue().toString();
+                final int res = Integer.valueOf(dataSnapshot.getValue().toString());
 
-                if (res != "pending"){
-                    if(res == toss_choice_st){
-                        jRef.child("toss").child("winner").setValue("player2");
+                if (res != 3){
+
+                    if (res == 0){
+                        toss_head.animate().alpha(1f).setDuration(1500).start();
                     }
                     else {
-                        jRef.child("toss").child("winner").setValue("player1");
+                        toss_tail.animate().alpha(1f).setDuration(1500).start();
                     }
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if(res == toss_choice_st){
+                                jRef.child("toss").child("winner").setValue(1);
+                            }
+                            else {
+                                jRef.child("toss").child("winner").setValue(0);
+                            }
+                        }
+                    };
+                    handler.postDelayed(runnable, 2000);
+
                 }
             }
 
@@ -326,24 +401,43 @@ public class TossActivity extends AppCompatActivity {
         jRef.child("toss").child("winner").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String winner = dataSnapshot.getValue().toString();
-                if (winner != "pending"){
-                    if (winner == "player1"){
+                int winner = Integer.valueOf(dataSnapshot.getValue().toString());
+                if (winner != 3){
+                    if (winner == 0){
                         if (isHost){
                             Toast.makeText(TossActivity.this, "Your opponent lost the toss", Toast.LENGTH_SHORT).show();
+                            isFirst = true;
                         }
                         else {
                             Toast.makeText(TossActivity.this, "You lost the toss", Toast.LENGTH_SHORT).show();
+                            isFirst = false;
                         }
 
                     }else {
                         if (isHost){
                             Toast.makeText(TossActivity.this, "Your opponent won the toss", Toast.LENGTH_SHORT).show();
+                            isFirst = false;
                         }
                         else {
                             Toast.makeText(TossActivity.this, "You won the toss", Toast.LENGTH_SHORT).show();
+                            isFirst = true;
                         }
                     }
+
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TossActivity.this, ChoosePlayers.class);
+                            intent.putExtra("game", game);
+                            intent.putExtra("isHost", isHost);
+                            intent.putExtra("isFirst", isFirst);
+                            startActivity(intent);
+                            finish();
+                        }
+                    };
+
+                    handler.postDelayed(runnable, 1500);
                 }
             }
 
@@ -431,12 +525,11 @@ public class TossActivity extends AppCompatActivity {
         Random random = new Random();
         boolean val = random.nextBoolean();
         if (val){
-            toss_head.animate().alpha(1f).setDuration(1500).start();
-            jRef.child("toss").child("res").setValue("heads");
+            jRef.child("toss").child("res").setValue(0);
         }
         else {
-            toss_head.animate().alpha(1f).setDuration(1500).start();
-            jRef.child("toss").child("res").setValue("tails");
+            toss_tail.animate().alpha(1f).setDuration(1500).start();
+            jRef.child("toss").child("res").setValue(1);
         }
     }
 
@@ -497,7 +590,7 @@ public class TossActivity extends AppCompatActivity {
             heads.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    jRef.child("toss").child("status").setValue("heads");
+                    jRef.child("toss").child("status").setValue(0);
                     dialog.dismiss();
                 }
             });
@@ -505,7 +598,7 @@ public class TossActivity extends AppCompatActivity {
             tails.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    jRef.child("toss").child("status").setValue("tails");
+                    jRef.child("toss").child("status").setValue(1);
                     dialog.dismiss();
                 }
             });

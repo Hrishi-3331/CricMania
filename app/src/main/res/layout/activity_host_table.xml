@@ -74,14 +74,14 @@
                 android:src="@drawable/subtract"
                 android:tint="@android:color/white" />
 
-            <TextView
+            <EditText
                 android:id="@+id/coins_number"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/textbox"
                 android:inputType="number"
                 android:padding="8dp"
-                android:text="5"
+                android:text="10"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />
@@ -177,14 +177,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="\u2022  Minimum 5 coins per run required."
+                android:text="\u2022  Minimum 10 coins per run required."
                 android:textColor="@android:color/background_light"
                 android:textSize="15sp" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="\u2022  Minimum 4 players required"
+                android:text="\u2022  Minimum 1 player required"
                 android:textColor="@android:color/background_light"
                 android:textSize="15sp" />
             <TextView
@@ -199,15 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="\u2022  Maximum 11 players "
-                android:textColor="@android:color/background_light"
-                android:textSize="15sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="\u2022  Maximum 20 coins per run"
+                android:text="\u2022  Maximum 6 players "
                 android:textColor="@android:color/background_light"
                 android:textSize="15sp" />
 

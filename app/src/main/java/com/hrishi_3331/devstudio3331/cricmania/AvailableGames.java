@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 public class AvailableGames extends AppCompatActivity {
 
@@ -53,6 +54,7 @@ public class AvailableGames extends AppCompatActivity {
             protected void populateViewHolder(MatchViewHolder viewHolder, Match model, int position) {
                 viewHolder.setTeams(model.getTeam1(), model.getTeam2(), model.getTitle());
                 viewHolder.setId(model.getMatch_id());
+                viewHolder.setIcons(model.getTeam1_icon(), model.getTeam2_icon());
                 viewHolder.setListner(AvailableGames.this);
 
             }
@@ -87,6 +89,16 @@ public class AvailableGames extends AppCompatActivity {
 
         public void setId(String Id){
             this.id = Id;
+        }
+
+        public void setIcons(String icon1, String icon2){
+            try {
+                Picasso.get().load(icon1).into(team1_icon);
+                Picasso.get().load(icon2).into(team2_icon);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         public void setListner(final Context context){
